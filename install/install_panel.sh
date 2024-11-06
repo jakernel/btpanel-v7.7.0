@@ -17,10 +17,10 @@ Centos6Check=$(cat /etc/redhat-release | grep ' 6.' | grep -iE 'centos|Red Hat')
 if [ "${Centos6Check}" ];then
 	echo "Centos6不支持安装宝塔面板，请更换Centos7/8安装宝塔面板"
 	exit 1
-fi 
+fi
 
 UbuntuCheck=$(cat /etc/issue|grep Ubuntu|awk '{print $2}'|cut -f 1 -d '.')
-if [ "${UbuntuCheck}" -lt "16" ];then
+if [ "${UbuntuCheck}" -lt 16 ];then
 	echo "Ubuntu ${UbuntuCheck}不支持安装宝塔面板，建议更换Ubuntu18/20安装宝塔面板"
 	exit 1
 fi
@@ -95,7 +95,7 @@ Get_Pack_Manager(){
 	if [ -f "/usr/bin/yum" ] && [ -d "/etc/yum.repos.d" ]; then
 		PM="yum"
 	elif [ -f "/usr/bin/apt-get" ] && [ -f "/usr/bin/dpkg" ]; then
-		PM="apt-get"		
+		PM="apt-get"
 	fi
 }
 Auto_Swap()
@@ -118,7 +118,7 @@ Auto_Swap()
 		echo "Swap total sizse: $swap";
 		return;
 	fi
-	
+
 	sed -i "/\/www\/swap/d" /etc/fstab
 	rm -f $swapFile
 }
@@ -128,7 +128,7 @@ Service_Add(){
 		chkconfig --level 2345 bt on
 	elif [ "${PM}" == "apt-get" ]; then
 		update-rc.d bt defaults
-	fi 
+	fi
 }
 
 get_node_url(){
@@ -146,7 +146,7 @@ get_node_url(){
 		echo '---------------------------------------------';
 		return
 	fi
-	
+
 	echo '---------------------------------------------';
 	echo "Selected download node...";
 	nodes=(http://dg2.bt.cn http://dg1.bt.cn http://125.90.93.52:5880 http://36.133.1.8:5880 http://123.129.198.197 http://38.34.185.130 http://116.213.43.206:5880 http://128.1.164.196);
@@ -178,7 +178,7 @@ get_node_url(){
 				if [ $RES -ge 3000 ];then
 					break;
 				fi
-			fi	
+			fi
 		fi
 	done
 
@@ -201,7 +201,7 @@ Remove_Package(){
 		isPackage=$(rpm -q ${PackageNmae}|grep "not installed")
 		if [ -z "${isPackage}" ];then
 			yum remove ${PackageNmae} -y
-		fi 
+		fi
 	elif [ "${PM}" == "apt-get" ];then
 		isPackage=$(dpkg -l|grep ${PackageNmae})
 		if [ "${PackageNmae}" ];then
@@ -219,15 +219,15 @@ Install_RPM_Pack(){
 
 	#SYS_TYPE=$(uname -a|grep x86_64)
 	#yumBaseUrl=$(cat /etc/yum.repos.d/CentOS-Base.repo|grep baseurl=http|cut -d '=' -f 2|cut -d '$' -f 1|head -n 1)
-	#[ "${yumBaseUrl}" ] && checkYumRepo=$(curl --connect-timeout 5 --head -s -o /dev/null -w %{http_code} ${yumBaseUrl})	
+	#[ "${yumBaseUrl}" ] && checkYumRepo=$(curl --connect-timeout 5 --head -s -o /dev/null -w %{http_code} ${yumBaseUrl})
 	#if [ "${checkYumRepo}" != "200" ] && [ "${SYS_TYPE}" ];then
-	#	curl -Ss --connect-timeout 3 -m 60 https://raw.githubusercontent.com/8838/btpanel-v7.7.0/main/install/yumRepo_select.sh|bash
+	#	curl -Ss --connect-timeout 3 -m 60 https://gh.irenfeng.com/https://raw.githubusercontent.com/8838/btpanel-v7.7.0/main/install/yumRepo_select.sh|bash
 	#fi
-	
+
 	#尝试同步时间(从bt.cn)
 	echo 'Synchronizing system time...'
 	getBtTime=$(curl -sS --connect-timeout 3 -m 60 http://www.bt.cn/api/index/get_time)
-	if [ "${getBtTime}" ];then	
+	if [ "${getBtTime}" ];then
 		date -s "$(date -d @$getBtTime +"%Y-%m-%d %H:%M:%S")"
 	fi
 
@@ -261,7 +261,7 @@ Install_RPM_Pack(){
 	fi
 
 	ALI_OS=$(cat /etc/redhat-release |grep "Alibaba Cloud Linux release 3")
-	if [ -z "${ALI_OS}" ];then 
+	if [ -z "${ALI_OS}" ];then
 		yum install epel-release -y
 	fi
 }
@@ -298,7 +298,7 @@ Install_Deb_Pack(){
 		if [ ! -f '/var/spool/cron/crontabs/root' ];then
 			echo '' > /var/spool/cron/crontabs/root
 			chmod 600 /var/spool/cron/crontabs/root
-		fi	
+		fi
 	fi
 }
 Get_Versions(){
@@ -355,7 +355,7 @@ Get_Versions(){
 	fi
 }
 Install_Python_Lib(){
-	curl -Ss --connect-timeout 3 -m 60 https://raw.githubusercontent.com/8838/btpanel-v7.7.0/main/install/pip_select.sh|bash
+	curl -Ss --connect-timeout 3 -m 60 https://gh.irenfeng.com/https://raw.githubusercontent.com/8838/btpanel-v7.7.0/main/install/pip_select.sh|bash
 	pyenv_path="/www/server/panel"
 	if [ -f $pyenv_path/pyenv/bin/python ];then
 	 	is_ssl=$($python_bin -c "import ssl" 2>&1|grep cannot)
@@ -392,11 +392,11 @@ Install_Python_Lib(){
 	if [ "$is_aarch64" != "" ];then
 		is64bit="aarch64"
 	fi
-	
+
 	if [ -f "/www/server/panel/pymake.pl" ];then
 		os_version=""
 		rm -f /www/server/panel/pymake.pl
-	fi	
+	fi
 
 	if [ "${os_version}" != "" ];then
 		pyenv_file="/www/pyenv.tar.gz"
@@ -411,7 +411,7 @@ Install_Python_Lib(){
 			chmod -R 700 $pyenv_path/pyenv/bin
 			if [ ! -f $pyenv_path/pyenv/bin/python ];then
 				rm -f $pyenv_file
-				Red_Error "ERROR: Install python env fielded." "ERROR: 下载宝塔运行环境失败，请尝试重新安装！" 
+				Red_Error "ERROR: Install python env fielded." "ERROR: 下载宝塔运行环境失败，请尝试重新安装！"
 			fi
 			$pyenv_path/pyenv/bin/python3.7 -V
 			if [ $? -eq 0 ];then
@@ -457,7 +457,7 @@ Install_Python_Lib(){
 	chmod -R 700 $pyenv_path/pyenv/bin
 	$pyenv_path/pyenv/bin/pip install -U pip
 	$pyenv_path/pyenv/bin/pip install -U setuptools
-	$pyenv_path/pyenv/bin/pip install -U wheel==0.34.2 
+	$pyenv_path/pyenv/bin/pip install -U wheel==0.34.2
 	$pyenv_path/pyenv/bin/pip install -r $pyenv_path/pyenv/pip.txt
 	source $pyenv_path/pyenv/bin/activate
 
@@ -488,9 +488,9 @@ Install_Bt(){
 		sleep 1
 	fi
 
-	wget -O /etc/init.d/bt https://raw.githubusercontent.com/8838/btpanel-v7.7.0/main/install/src/bt6.init -T 10
-	wget -O /www/server/panel/install/public.sh https://raw.githubusercontent.com/8838/btpanel-v7.7.0/main/install/public.sh -T 10
-	wget -O panel.zip https://raw.githubusercontent.com/8838/btpanel-v7.7.0/main/install/src/panel6.zip -T 10
+	wget -O /etc/init.d/bt https://gh.irenfeng.com/https://raw.githubusercontent.com/8838/btpanel-v7.7.0/main/install/src/bt6.init -T 10
+	wget -O /www/server/panel/install/public.sh https://gh.irenfeng.com/https://raw.githubusercontent.com/8838/btpanel-v7.7.0/main/install/public.sh -T 10
+	wget -O panel.zip https://gh.irenfeng.com/https://raw.githubusercontent.com/8838/btpanel-v7.7.0/main/install/src/panel6.zip -T 10
 
 	if [ -f "${setup_path}/server/panel/data/default.db" ];then
 		if [ -d "/${setup_path}/server/panel/old_data" ];then
@@ -540,8 +540,8 @@ Install_Bt(){
 	chmod -R +x ${setup_path}/server/panel/script
 	ln -sf /etc/init.d/bt /usr/bin/bt
 	echo "${panelPort}" > ${setup_path}/server/panel/data/port.pl
-	wget -O /etc/init.d/bt https://raw.githubusercontent.com/8838/btpanel-v7.7.0/main/install/src/bt7.init -T 10
-	wget -O /www/server/panel/init.sh https://raw.githubusercontent.com/8838/btpanel-v7.7.0/main/install/src/bt7.init -T 10
+	wget -O /etc/init.d/bt https://gh.irenfeng.com/https://raw.githubusercontent.com/8838/btpanel-v7.7.0/main/install/src/bt7.init -T 10
+	wget -O /www/server/panel/init.sh https://gh.irenfeng.com/https://raw.githubusercontent.com/8838/btpanel-v7.7.0/main/install/src/bt7.init -T 10
 	wget -O /www/server/panel/data/softList.conf ${download_Url}/install/conf/softList.conf
 }
 Set_Bt_Panel(){
@@ -562,7 +562,7 @@ Set_Bt_Panel(){
 	echo "${password}" > ${setup_path}/server/panel/default.pl
 	chmod 600 ${setup_path}/server/panel/default.pl
 	sleep 3
-	/etc/init.d/bt restart 	
+	/etc/init.d/bt restart
 	sleep 3
 	isStart=$(ps aux |grep 'BT-Panel'|grep -v grep|awk '{print $2}')
 	LOCAL_CURL=$(curl 127.0.0.1:8888/login 2>&1 |grep -i html)
@@ -686,7 +686,7 @@ Install_Main(){
 	if [ "${MEM_TOTAL}" -le "1" ];then
 		Auto_Swap
 	fi
-	
+
 	if [ "${PM}" = "yum" ]; then
 		Install_RPM_Pack
 	elif [ "${PM}" = "apt-get" ]; then
@@ -695,7 +695,7 @@ Install_Main(){
 
 	Install_Python_Lib
 	Install_Bt
-	
+
 
 	Set_Bt_Panel
 	Service_Add
