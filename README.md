@@ -46,3 +46,9 @@ chattr +i /www/server/panel/data/plugin.json
 ```
 sed -i "s|if (bind_user == 'REMOVED') {|if (bind_user == 'True') {|g" /www/server/panel/BTPanel/static/js/index.js
 ```
+
+# 离线模式：
+宝塔面板的离线模式不是纯正的全部离线，而是断开与软件商店节点和其他的通讯节点连接，但是账号验证等还是需要联网使用的
+离线模式下，不会检测更新。
+软件商店装完插件后，开启离线模式
+
