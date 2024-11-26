@@ -3,6 +3,11 @@ PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin
 export PATH
 LANG=en_US.UTF-8
 
+down_url=https://dl.sep.cc
+panel_path=/www/server/panel
+installpanel_admin_path_pl=False
+installpanel_port=1024
+
 if [ $(whoami) != "root" ];then
 	echo "请使用root权限执行宝塔安装命令！"
 	exit 1;
@@ -20,7 +25,7 @@ if [ "${Centos6Check}" ];then
 fi
 
 UbuntuCheck=$(cat /etc/issue|grep Ubuntu|awk '{print $2}'|cut -f 1 -d '.')
-if [ "${UbuntuCheck}" and ${UbuntuCheck}" -lt "16" ];then
+if [ "${UbuntuCheck}" -lt "16" ];then
 	echo "Ubuntu ${UbuntuCheck}不支持安装宝塔面板，建议更换Ubuntu18/20安装宝塔面板"
 	exit 1
 fi
@@ -221,7 +226,7 @@ Install_RPM_Pack(){
 	#yumBaseUrl=$(cat /etc/yum.repos.d/CentOS-Base.repo|grep baseurl=http|cut -d '=' -f 2|cut -d '$' -f 1|head -n 1)
 	#[ "${yumBaseUrl}" ] && checkYumRepo=$(curl --connect-timeout 5 --head -s -o /dev/null -w %{http_code} ${yumBaseUrl})
 	#if [ "${checkYumRepo}" != "200" ] && [ "${SYS_TYPE}" ];then
-	#	curl -Ss --connect-timeout 3 -m 60 https://gh.irenfeng.com/https://raw.githubusercontent.com/8838/btpanel-v7.7.0/main/install/yumRepo_select.sh|bash
+	#	curl -Ss --connect-timeout 3 -m 60 https://bt.sh.cn/src/yumRepo_select.sh|bash
 	#fi
 
 	#尝试同步时间(从bt.cn)
@@ -355,7 +360,7 @@ Get_Versions(){
 	fi
 }
 Install_Python_Lib(){
-	curl -Ss --connect-timeout 3 -m 60 https://gh.irenfeng.com/https://raw.githubusercontent.com/8838/btpanel-v7.7.0/main/install/pip_select.sh|bash
+	curl -Ss --connect-timeout 3 -m 60 https://do.sep.cc/btpanel/install/pip_select.sh|bash
 	pyenv_path="/www/server/panel"
 	if [ -f $pyenv_path/pyenv/bin/python ];then
 	 	is_ssl=$($python_bin -c "import ssl" 2>&1|grep cannot)
@@ -364,7 +369,7 @@ Install_Python_Lib(){
 			chmod -R 700 $pyenv_path/pyenv/bin
 			is_package=$($python_bin -m psutil 2>&1|grep package)
 			if [ "$is_package" = "" ];then
-				wget -O $pyenv_path/pyenv/pip.txt $download_Url/install/pyenv/pip.txt -T 5
+				wget -O $pyenv_path/pyenv/pip.txt https://do.sep.cc/btpanel/install/pip.txt -T 5
 				$pyenv_path/pyenv/bin/pip install -U pip
 				$pyenv_path/pyenv/bin/pip install -U setuptools
 				$pyenv_path/pyenv/bin/pip install -r $pyenv_path/pyenv/pip.txt
@@ -400,7 +405,7 @@ Install_Python_Lib(){
 
 	if [ "${os_version}" != "" ];then
 		pyenv_file="/www/pyenv.tar.gz"
-		wget -O $pyenv_file $download_Url/install/pyenv/pyenv-${os_type}${os_version}-x${is64bit}.tar.gz -T 10
+		wget -O /www/pyenv.tar.gz https://do.sep.cc/btpanel/install/pyenv-el7-x64.tar.gz -T 10
 		tmp_size=$(du -b $pyenv_file|awk '{print $1}')
 		if [ $tmp_size -lt 703460 ];then
 			rm -f $pyenv_file
@@ -430,7 +435,7 @@ Install_Python_Lib(){
 	cd /www
 	python_src='/www/python_src.tar.xz'
 	python_src_path="/www/Python-${py_version}"
-	wget -O $python_src $download_Url/src/Python-${py_version}.tar.xz -T 5
+	wget -O /www/python_src.tar.xz https://do.sep.cc/btpanel/install/Python-3.7.8.tar.xz -T 5
 	tmp_size=$(du -b $python_src|awk '{print $1}')
 	if [ $tmp_size -lt 10703460 ];then
 		rm -f $python_src
@@ -448,8 +453,8 @@ Install_Python_Lib(){
 	fi
 	cd ~
 	rm -rf $python_src_path
-	wget -O $pyenv_path/pyenv/bin/activate $download_Url/install/pyenv/activate.panel -T 5
-	wget -O $pyenv_path/pyenv/pip.txt $download_Url/install/pyenv/pip-3.7.8.txt -T 5
+	wget -O $pyenv_path/pyenv/bin/activate https://do.sep.cc/btpanel/install/activate.panel -T 5
+	wget -O $pyenv_path/pyenv/pip.txt https://do.sep.cc/btpanel/install/pip-3.7.8.txt -T 5
 	ln -sf $pyenv_path/pyenv/bin/pip3.7 $pyenv_path/pyenv/bin/pip
 	ln -sf $pyenv_path/pyenv/bin/python3.7 $pyenv_path/pyenv/bin/python
 	ln -sf $pyenv_path/pyenv/bin/pip3.7 /usr/bin/btpip
@@ -468,7 +473,7 @@ Install_Python_Lib(){
 	fi
 }
 Install_Bt(){
-	panelPort="8880"
+	panelPort="1024"
 	if [ -f ${setup_path}/server/panel/data/port.pl ];then
 		panelPort=$(cat ${setup_path}/server/panel/data/port.pl)
 	fi
@@ -488,9 +493,9 @@ Install_Bt(){
 		sleep 1
 	fi
 
-	wget -O /etc/init.d/bt https://gh.irenfeng.com/https://raw.githubusercontent.com/8838/btpanel-v7.7.0/main/install/src/bt6.init -T 10
-	wget -O /www/server/panel/install/public.sh https://gh.irenfeng.com/https://raw.githubusercontent.com/8838/btpanel-v7.7.0/main/install/public.sh -T 10
-	wget -O panel.zip https://gh.irenfeng.com/https://raw.githubusercontent.com/8838/btpanel-v7.7.0/main/install/src/panel6.zip -T 10
+	wget -O /etc/init.d/bt https://do.sep.cc/btpanel/install/bt6.init -T 10
+	wget -O /www/server/panel/install/public.sh https://do.sep.cc/btpanel/install/public.sh -T 10
+	wget -O panel.zip https://do.sep.cc/btpanel/LinuxPanel-panel6.zip -T 10
 
 	if [ -f "${setup_path}/server/panel/data/default.db" ];then
 		if [ -d "/${setup_path}/server/panel/old_data" ];then
@@ -540,9 +545,9 @@ Install_Bt(){
 	chmod -R +x ${setup_path}/server/panel/script
 	ln -sf /etc/init.d/bt /usr/bin/bt
 	echo "${panelPort}" > ${setup_path}/server/panel/data/port.pl
-	wget -O /etc/init.d/bt https://gh.irenfeng.com/https://raw.githubusercontent.com/8838/btpanel-v7.7.0/main/install/src/bt7.init -T 10
-	wget -O /www/server/panel/init.sh https://gh.irenfeng.com/https://raw.githubusercontent.com/8838/btpanel-v7.7.0/main/install/src/bt7.init -T 10
-	wget -O /www/server/panel/data/softList.conf ${download_Url}/install/conf/softList.conf
+	wget -O /etc/init.d/bt https://do.sep.cc/btpanel/install/bt7.init -T 10
+	wget -O /www/server/panel/init.sh https://do.sep.cc/btpanel/install/bt7.init -T 10
+	wget -O /www/server/panel/data/softList.conf https://do.sep.cc/btpanel/install/softList.conf
 }
 Set_Bt_Panel(){
 	password=$(cat /dev/urandom | head -n 16 | md5sum | head -c 8)
@@ -725,11 +730,62 @@ fi
 
 Install_Main
 echo > /www/server/panel/data/bind.pl
+
+#取消入口限制
+if [[ "${installpanel_admin_path_pl}" == "False" ]]; then
+	bt 11
+fi
+
+#改端口
+if [[ "${installpanel_port}" ]]; then
+	bt 8 <<EOF
+$installpanel_port
+EOF
+fi
+
+bt 25
+bt 18
+
+echo -e "正在去除计算验证......"
+Layout_file="/www/server/panel/BTPanel/templates/default/layout.html"
+JS_file="/www/server/panel/BTPanel/static/bt.js"
+if [ $(grep -c "<script src=\"/static/bt.js\"></script>" $Layout_file) -eq '0' ]; then
+	sed -i '/{% block scripts %} {% endblock %}/a <script src="/static/bt.js"></script>' $Layout_file
+fi
+wget ${down_url}/btpanel/install/bt.js -O $JS_file
+
+echo -e "正在关闭强制绑定......"
+userinfo=/www/server/panel/data/userInfo.json
+if [ -f "${userinfo}" ]; then
+	chattr -i ${userinfo}
+	rm -f ${userinfo}
+fi
+rm -f /www/server/panel/data/bind.pl
+rm -f /www/server/panel/data/sid.pl
+
+echo -e "正在关闭活动推荐与在线客服......"
+if [ ! -f /www/server/panel/data/not_recommend.pl ]; then
+	echo "True" >/www/server/panel/data/not_recommend.pl
+fi
+if [ ! -f /www/server/panel/data/not_workorder.pl ]; then
+	echo "True" >/www/server/panel/data/not_workorder.pl
+fi
+echo -e "正在关闭首页软件推荐与广告......"
+sed -i "/return config/, /return /d" /www/server/panel/BTPanel/static/js/public.js
+echo -e "正在关闭宝塔拉黑检测与提示......"
+sed -i '/self._check_url/d' /www/server/panel/class/panelPlugin.py
+
+echo -e "正在干掉宝塔后台上传数据功能......"
+echo "" > /www/server/panel/script/site_task.py
+chattr +i /www/server/panel/script/site_task.py
+rm -rf /www/server/panel/logs/request/*
+chattr +i -R /www/server/panel/logs/request
+
 echo -e "=================================================================="
 echo -e "\033[32mCongratulations! Installed successfully!\033[0m"
 echo -e "=================================================================="
-echo  "外网面板地址: http://${getIpAddress}:${panelPort}${auth_path}"
-echo  "内网面板地址: http://${LOCAL_IP}:${panelPort}${auth_path}"
+echo  "外网面板地址: http://${getIpAddress}:${panelPort}"
+echo  "内网面板地址: http://${LOCAL_IP}:${panelPort}"
 echo -e "username: $username"
 echo -e "password: $password"
 echo -e "\033[33mIf you cannot access the panel,\033[0m"
@@ -740,5 +796,3 @@ echo -e "=================================================================="
 endTime=`date +%s`
 ((outTime=($endTime-$startTime)/60))
 echo -e "Time consumed:\033[32m $outTime \033[0mMinute!"
-
-

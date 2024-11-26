@@ -1,3 +1,7 @@
+# 推荐此开心版
+参考 `https://sep.cc/bt7.html`
+脚本目录 `happy`
+
 # btpanel-v7.7.0
 btpanel-v7.7.0-backup  官方原版v7.7.0版本面板备份
 
@@ -51,4 +55,3 @@ sed -i "s|if (bind_user == 'REMOVED') {|if (bind_user == 'True') {|g" /www/serve
 宝塔面板的离线模式不是纯正的全部离线，而是断开与软件商店节点和其他的通讯节点连接，但是账号验证等还是需要联网使用的
 离线模式下，不会检测更新。
 软件商店装完插件后，开启离线模式
-
