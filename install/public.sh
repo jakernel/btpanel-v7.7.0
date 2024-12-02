@@ -9,6 +9,8 @@ export PATH
 export LANG=en_US.UTF-8
 export LANGUAGE=en_US:en
 
+down_url=https://gh.irenfeng.com/https://raw.githubusercontent.com/jakernel/btpanel-v7.7.0/main
+
 get_node_url(){
 	nodes=(http://dg2.bt.cn http://dg1.bt.cn http://36.133.1.8:5880 http://123.129.198.197 http://38.34.185.130 http://116.213.43.206:5880 http://128.1.164.196);
 	tmp_file1=/dev/shm/net_test1.pl
@@ -149,9 +151,9 @@ if [ -d "/www/server/phpmyadmin/pma" ];then
 	rm -rf /www/server/phpmyadmin/pma
 	EN_CHECK=$(cat /www/server/panel/config/config.json |grep English)
 	if [ "${EN_CHECK}" ];then
-		curl https://gh.irenfeng.com/https://raw.githubusercontent.com/8838/btpanel-v7.7.0/main/install/update6_en.sh|bash
+		curl ${down_url}/install/update6_en.sh|bash
 	else
-		curl https://gh.irenfeng.com/https://raw.githubusercontent.com/8838/btpanel-v7.7.0/main/install/update6.sh|bash
+		curl ${down_url}/install/update6.sh|bash
 	fi
 	echo > /www/server/panel/data/restart.pl
 fi

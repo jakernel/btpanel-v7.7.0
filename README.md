@@ -1,6 +1,6 @@
 # 推荐此开心版
 参考 `https://sep.cc/bt7.html`
-脚本目录 `happy`
+脚本目录 `happy`，已整合，只保留优化脚本
 
 # btpanel-v7.7.0
 btpanel-v7.7.0-backup  官方原版v7.7.0版本面板备份

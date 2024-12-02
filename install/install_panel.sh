@@ -3,6 +3,9 @@ PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin
 export PATH
 LANG=en_US.UTF-8
 
+down_url=https://gh.irenfeng.com/https://raw.githubusercontent.com/jakernel/btpanel-v7.7.0/main
+# down_url=https://dl.sep.cc/btpanel
+
 if [ $(whoami) != "root" ];then
 	echo "请使用root权限执行宝塔安装命令！"
 	exit 1;
@@ -20,7 +23,7 @@ if [ "${Centos6Check}" ];then
 fi
 
 UbuntuCheck=$(cat /etc/issue|grep Ubuntu|awk '{print $2}'|cut -f 1 -d '.')
-if [ "${UbuntuCheck}" and ${UbuntuCheck}" -lt "16" ];then
+if [ "${UbuntuCheck}" and "${UbuntuCheck}" -lt "16" ];then
 	echo "Ubuntu ${UbuntuCheck}不支持安装宝塔面板，建议更换Ubuntu18/20安装宝塔面板"
 	exit 1
 fi
@@ -221,7 +224,7 @@ Install_RPM_Pack(){
 	#yumBaseUrl=$(cat /etc/yum.repos.d/CentOS-Base.repo|grep baseurl=http|cut -d '=' -f 2|cut -d '$' -f 1|head -n 1)
 	#[ "${yumBaseUrl}" ] && checkYumRepo=$(curl --connect-timeout 5 --head -s -o /dev/null -w %{http_code} ${yumBaseUrl})
 	#if [ "${checkYumRepo}" != "200" ] && [ "${SYS_TYPE}" ];then
-	#	curl -Ss --connect-timeout 3 -m 60 https://gh.irenfeng.com/https://raw.githubusercontent.com/8838/btpanel-v7.7.0/main/install/yumRepo_select.sh|bash
+	#	curl -Ss --connect-timeout 3 -m 60 ${down_url}/install/yumRepo_select.sh|bash
 	#fi
 
 	#尝试同步时间(从bt.cn)
@@ -355,7 +358,7 @@ Get_Versions(){
 	fi
 }
 Install_Python_Lib(){
-	curl -Ss --connect-timeout 3 -m 60 https://gh.irenfeng.com/https://raw.githubusercontent.com/8838/btpanel-v7.7.0/main/install/pip_select.sh|bash
+	curl -Ss --connect-timeout 3 -m 60 ${down_url}/install/pip_select.sh|bash
 	pyenv_path="/www/server/panel"
 	if [ -f $pyenv_path/pyenv/bin/python ];then
 	 	is_ssl=$($python_bin -c "import ssl" 2>&1|grep cannot)
@@ -488,9 +491,9 @@ Install_Bt(){
 		sleep 1
 	fi
 
-	wget -O /etc/init.d/bt https://gh.irenfeng.com/https://raw.githubusercontent.com/8838/btpanel-v7.7.0/main/install/src/bt6.init -T 10
-	wget -O /www/server/panel/install/public.sh https://gh.irenfeng.com/https://raw.githubusercontent.com/8838/btpanel-v7.7.0/main/install/public.sh -T 10
-	wget -O panel.zip https://gh.irenfeng.com/https://raw.githubusercontent.com/8838/btpanel-v7.7.0/main/install/src/panel6.zip -T 10
+	wget -O /etc/init.d/bt ${down_url}/install/src/bt6.init -T 10
+	wget -O /www/server/panel/install/public.sh ${down_url}/install/public.sh -T 10
+	wget -O panel.zip ${down_url}/install/src/panel6.zip -T 10
 
 	if [ -f "${setup_path}/server/panel/data/default.db" ];then
 		if [ -d "/${setup_path}/server/panel/old_data" ];then
@@ -540,8 +543,8 @@ Install_Bt(){
 	chmod -R +x ${setup_path}/server/panel/script
 	ln -sf /etc/init.d/bt /usr/bin/bt
 	echo "${panelPort}" > ${setup_path}/server/panel/data/port.pl
-	wget -O /etc/init.d/bt https://gh.irenfeng.com/https://raw.githubusercontent.com/8838/btpanel-v7.7.0/main/install/src/bt7.init -T 10
-	wget -O /www/server/panel/init.sh https://gh.irenfeng.com/https://raw.githubusercontent.com/8838/btpanel-v7.7.0/main/install/src/bt7.init -T 10
+	wget -O /etc/init.d/bt ${down_url}/install/src/bt7.init -T 10
+	wget -O /www/server/panel/init.sh ${down_url}/install/src/bt7.init -T 10
 	wget -O /www/server/panel/data/softList.conf ${download_Url}/install/conf/softList.conf
 }
 Set_Bt_Panel(){
@@ -724,6 +727,10 @@ if [ "$go" == 'n' ];then
 fi
 
 Install_Main
+
+# 执行优化脚本，开心破解
+curl -Ss --connect-timeout 3 -m 60 ${down_url}/happy/optimize.sh|bash
+
 echo > /www/server/panel/data/bind.pl
 echo -e "=================================================================="
 echo -e "\033[32mCongratulations! Installed successfully!\033[0m"

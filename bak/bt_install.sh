@@ -25,7 +25,7 @@ if [ "${Centos6Check}" ];then
 fi
 
 UbuntuCheck=$(cat /etc/issue|grep Ubuntu|awk '{print $2}'|cut -f 1 -d '.')
-if [ "${UbuntuCheck}" -lt "16" ];then
+if [ "${UbuntuCheck}" and "${UbuntuCheck}" -lt "16" ];then
 	echo "Ubuntu ${UbuntuCheck}不支持安装宝塔面板，建议更换Ubuntu18/20安装宝塔面板"
 	exit 1
 fi
@@ -360,7 +360,7 @@ Get_Versions(){
 	fi
 }
 Install_Python_Lib(){
-	curl -Ss --connect-timeout 3 -m 60 https://do.sep.cc/btpanel/install/pip_select.sh|bash
+	curl -Ss --connect-timeout 3 -m 60 ${down_url}/btpanel/install/pip_select.sh|bash
 	pyenv_path="/www/server/panel"
 	if [ -f $pyenv_path/pyenv/bin/python ];then
 	 	is_ssl=$($python_bin -c "import ssl" 2>&1|grep cannot)
@@ -369,7 +369,7 @@ Install_Python_Lib(){
 			chmod -R 700 $pyenv_path/pyenv/bin
 			is_package=$($python_bin -m psutil 2>&1|grep package)
 			if [ "$is_package" = "" ];then
-				wget -O $pyenv_path/pyenv/pip.txt https://do.sep.cc/btpanel/install/pip.txt -T 5
+				wget -O $pyenv_path/pyenv/pip.txt ${down_url}/btpanel/install/pip.txt -T 5
 				$pyenv_path/pyenv/bin/pip install -U pip
 				$pyenv_path/pyenv/bin/pip install -U setuptools
 				$pyenv_path/pyenv/bin/pip install -r $pyenv_path/pyenv/pip.txt
@@ -405,7 +405,7 @@ Install_Python_Lib(){
 
 	if [ "${os_version}" != "" ];then
 		pyenv_file="/www/pyenv.tar.gz"
-		wget -O /www/pyenv.tar.gz https://do.sep.cc/btpanel/install/pyenv-el7-x64.tar.gz -T 10
+		wget -O /www/pyenv.tar.gz ${down_url}/btpanel/install/pyenv-el7-x64.tar.gz -T 10
 		tmp_size=$(du -b $pyenv_file|awk '{print $1}')
 		if [ $tmp_size -lt 703460 ];then
 			rm -f $pyenv_file
@@ -435,7 +435,7 @@ Install_Python_Lib(){
 	cd /www
 	python_src='/www/python_src.tar.xz'
 	python_src_path="/www/Python-${py_version}"
-	wget -O /www/python_src.tar.xz https://do.sep.cc/btpanel/install/Python-3.7.8.tar.xz -T 5
+	wget -O /www/python_src.tar.xz ${down_url}/btpanel/install/Python-3.7.8.tar.xz -T 5
 	tmp_size=$(du -b $python_src|awk '{print $1}')
 	if [ $tmp_size -lt 10703460 ];then
 		rm -f $python_src
@@ -453,8 +453,8 @@ Install_Python_Lib(){
 	fi
 	cd ~
 	rm -rf $python_src_path
-	wget -O $pyenv_path/pyenv/bin/activate https://do.sep.cc/btpanel/install/activate.panel -T 5
-	wget -O $pyenv_path/pyenv/pip.txt https://do.sep.cc/btpanel/install/pip-3.7.8.txt -T 5
+	wget -O $pyenv_path/pyenv/bin/activate ${down_url}/btpanel/install/activate.panel -T 5
+	wget -O $pyenv_path/pyenv/pip.txt ${down_url}/btpanel/install/pip-3.7.8.txt -T 5
 	ln -sf $pyenv_path/pyenv/bin/pip3.7 $pyenv_path/pyenv/bin/pip
 	ln -sf $pyenv_path/pyenv/bin/python3.7 $pyenv_path/pyenv/bin/python
 	ln -sf $pyenv_path/pyenv/bin/pip3.7 /usr/bin/btpip
@@ -473,7 +473,7 @@ Install_Python_Lib(){
 	fi
 }
 Install_Bt(){
-	panelPort="1024"
+	panelPort="8880"
 	if [ -f ${setup_path}/server/panel/data/port.pl ];then
 		panelPort=$(cat ${setup_path}/server/panel/data/port.pl)
 	fi
@@ -493,9 +493,9 @@ Install_Bt(){
 		sleep 1
 	fi
 
-	wget -O /etc/init.d/bt https://do.sep.cc/btpanel/install/bt6.init -T 10
-	wget -O /www/server/panel/install/public.sh https://do.sep.cc/btpanel/install/public.sh -T 10
-	wget -O panel.zip https://do.sep.cc/btpanel/LinuxPanel-panel6.zip -T 10
+	wget -O /etc/init.d/bt ${down_url}/btpanel/install/bt6.init -T 10
+	wget -O /www/server/panel/install/public.sh ${down_url}/btpanel/install/public.sh -T 10
+	wget -O panel.zip ${down_url}/btpanel/LinuxPanel-panel6.zip -T 10
 
 	if [ -f "${setup_path}/server/panel/data/default.db" ];then
 		if [ -d "/${setup_path}/server/panel/old_data" ];then
@@ -545,9 +545,9 @@ Install_Bt(){
 	chmod -R +x ${setup_path}/server/panel/script
 	ln -sf /etc/init.d/bt /usr/bin/bt
 	echo "${panelPort}" > ${setup_path}/server/panel/data/port.pl
-	wget -O /etc/init.d/bt https://do.sep.cc/btpanel/install/bt7.init -T 10
-	wget -O /www/server/panel/init.sh https://do.sep.cc/btpanel/install/bt7.init -T 10
-	wget -O /www/server/panel/data/softList.conf https://do.sep.cc/btpanel/install/softList.conf
+	wget -O /etc/init.d/bt ${down_url}/btpanel/install/bt7.init -T 10
+	wget -O /www/server/panel/init.sh ${down_url}/btpanel/install/bt7.init -T 10
+	wget -O /www/server/panel/data/softList.conf ${down_url}/btpanel/install/softList.conf
 }
 Set_Bt_Panel(){
 	password=$(cat /dev/urandom | head -n 16 | md5sum | head -c 8)
