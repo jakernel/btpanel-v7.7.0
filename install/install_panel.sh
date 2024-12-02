@@ -23,7 +23,7 @@ if [ "${Centos6Check}" ];then
 fi
 
 UbuntuCheck=$(cat /etc/issue|grep Ubuntu|awk '{print $2}'|cut -f 1 -d '.')
-if [ "${UbuntuCheck}" and "${UbuntuCheck}" -lt "16" ];then
+if [ ! -z "${UbuntuCheck}" ] && [ "${UbuntuCheck}" -lt "16" ]; then
 	echo "Ubuntu ${UbuntuCheck}不支持安装宝塔面板，建议更换Ubuntu18/20安装宝塔面板"
 	exit 1
 fi
@@ -545,7 +545,7 @@ Install_Bt(){
 	echo "${panelPort}" > ${setup_path}/server/panel/data/port.pl
 	wget -O /etc/init.d/bt ${down_url}/install/src/bt7.init -T 10
 	wget -O /www/server/panel/init.sh ${down_url}/install/src/bt7.init -T 10
-	wget -O /www/server/panel/data/softList.conf ${download_Url}/install/conf/softList.conf
+	wget -O /www/server/panel/data/softList.conf ${down_url}/install/conf/softList.conf
 }
 Set_Bt_Panel(){
 	password=$(cat /dev/urandom | head -n 16 | md5sum | head -c 8)
