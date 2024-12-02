@@ -34,7 +34,7 @@ echo "已去除宝塔面板强制绑定账号."
 #if [ `grep -c "<script src=\"/static/bt.js\"></script>" $Layout_file` -eq '0' ];then
 #    sed -i '/{% block scripts %} {% endblock %}/a <script src="/static/bt.js"></script>' $Layout_file;
 #fi;
-#wget -q ${down_url}/install/bt.js -O $JS_file;
+#wget -q ${down_url}/happy/bt.js -O $JS_file;
 #echo "已去除各种计算题与延时等待."
 
 sed -i "/htaccess = self.sitePath+'\/.htaccess'/, /public.ExecShell('chown -R www:www ' + htaccess)/d" /www/server/panel/class/panelSite.py
@@ -83,11 +83,11 @@ if [ -f ${plugin_file} ];then
     chattr -i /www/server/panel/data/plugin.json
     rm /www/server/panel/data/plugin.json
     cd /www/server/panel/data
-    wget ${down_url}/install/plugin.json
+    wget ${down_url}/happy/plugin.json
     chattr +i /www/server/panel/data/plugin.json
 else
     cd /www/server/panel/data
-    wget ${down_url}/install/plugin.json
+    wget ${down_url}/happy/plugin.json
     chattr +i /www/server/panel/data/plugin.json
 fi
 echo -e "插件商城开心结束."
@@ -100,11 +100,11 @@ if [ -f ${repair_file} ];then
     chattr -i /www/server/panel/data/repair.json
     rm /www/server/panel/data/repair.json
     cd /www/server/panel/data
-    wget ${down_url}/install/repair.json
+    wget ${down_url}/happy/repair.json
     chattr +i /www/server/panel/data/repair.json
 else
     cd /www/server/panel/data
-    wget ${down_url}/install/repair.json
+    wget ${down_url}/happy/repair.json
     chattr +i /www/server/panel/data/repair.json
 fi
 echo -e "文件防修改结束."
